@@ -65,7 +65,7 @@ for i in range(1, total_attempts + 1):
             compartment_id=compartment_id,
             availability_domain=current_ad,
             shape="VM.Standard.A1.Flex",
-            shape_config=oci.core.models.LaunchInstanceShapeConfigDetails(ocpus=2, memory_in_gbs=12),
+            shape_config=oci.core.models.LaunchInstanceShapeConfigDetails(ocpus=1, memory_in_gbs=4),
             source_details=oci.core.models.InstanceSourceViaBootVolumeDetails(source_type="bootVolume", boot_volume_id=boot_volume_id),
             create_vnic_details=oci.core.models.CreateVnicDetails(subnet_id=subnet_id, assign_public_ip=True, assign_private_dns_record=True, display_name="kurtarilan-vnic"),
             metadata={"ssh_authorized_keys": public_ssh_key}
