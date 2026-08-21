@@ -1,41 +1,44 @@
 import oci
 import os
 import time
-from dotenv import load_dotenv
 
-load_dotenv()
+# Degiskenleri guvenli cekmek icin yardimci fonksiyon (NoneType hatasini onler)
+def get_env_var(name, default_value=""):
+    val = os.environ.get(name)
+    if val is None:
+        print(f"HATA: {name} ortam degiskeni GitHub tarafindan Python'a aktarilamadi!")
+        return default_value
+    return val.strip()
 
-# Ortam değişkenlerinden (environment variables) konfigürasyonu çek
 config = {
-    "user": os.getenv("OCI_USER_ID"),
-    "key_content": os.getenv("OCI_PRIVATE_KEY"),
-    "fingerprint": os.getenv("OCI_FINGERPRINT"),
-    "tenancy": os.getenv("OCI_TENANCY_ID"),
-    "region": os.getenv("OCI_REGION") # Mumbai için .env dosyasında "ap-mumbai-1" olmalı
+    "user": get_env_var("OCI_USER_ID"),
+    "key_content": get_env_var("OCI_PRIVATE_KEY"),
+    "fingerprint": get_env_var("OCI_FINGERPRINT"),
+    "tenancy": get_env_var("OCI_TENANCY_ID"),
+    "region": get_env_var("OCI_REGION", "ap-mumbai-1")
 }
 
 try:
     compute_client = oci.core.ComputeClient(config)
-    print("OCI Kimlik Dogrulamasi Basarili. Döngü baslatiliyor...")
+    print("OCI Kimlik Dogrulamasi Basarili. Degiskenler kontrol ediliyor...")
 except Exception as e:
     print(f"Kimlik Dogrulama Basarisiz: {e}")
     exit(1)
 
-# Calistirma parametreleri
-compartment_id = os.getenv("OCI_TENANCY_ID")
-subnet_id = os.getenv("OCI_SUBNET_ID")
-boot_volume_id = os.getenv("OCI_BOOT_VOLUME_ID") # YENİ: Eski diskinin OCID'si
-public_ssh_key = os.getenv("OCI_PUBLIC_SSH_KEY")
+compartment_id = get_env_var("OCI_TENANCY_ID")
+subnet_id = get_env_var("OCI_SUBNET_ID")
+boot_volume_id = get_env_var("OCI_BOOT_VOLUME_ID")
+public_ssh_key = get_env_var("OCI_PUBLIC_SSH_KEY")
 
-# GÜVENLİK KONTROLÜ
-if not public_ssh_key or public_ssh_key.strip() == "":
-    print("KRITIK HATA: OCI_PUBLIC_SSH_KEY eksik veya bos!")
+# Kritik degiskenlerin bos olup olmadigini kontrol et
+if not boot_volume_id:
+    print("KRITIK HATA: OCI_BOOT_VOLUME_ID eksik!")
+    exit(1)
+if not subnet_id:
+    print("KRITIK HATA: OCI_SUBNET_ID eksik! Ag bileseni (Subnet) olmadan sunucu kurulamaz.")
     exit(1)
 
-# Sadece Mumbai AD-1 Bölgesi (Senin panelinde cikan AD)
 ads = ["GiHR:AP-MUMBAI-1-AD-1"]
-
-# Toplam deneme sayisi (60 az gelebilir, 2000 yapalim ki bütün gece denesin)
 total_attempts = 2000 
 
 for i in range(1, total_attempts + 1):
@@ -49,13 +52,12 @@ for i in range(1, total_attempts + 1):
             availability_domain=current_ad,
             shape="VM.Standard.A1.Flex",
             shape_config=oci.core.models.LaunchInstanceShapeConfigDetails(
-                ocpus=2,          # YENİ ÜCRETSİZ LİMİT
-                memory_in_gbs=12  # YENİ ÜCRETSİZ LİMİT
+                ocpus=2,
+                memory_in_gbs=12
             ),
-            # EN KRİTİK KISIM: İmaj yerine senin mevcut diskini bagliyoruz
-                source_details=oci.core.models.InstanceSourceViaBootVolumeDetails(
+            source_details=oci.core.models.InstanceSourceViaBootVolumeDetails(
                 source_type="bootVolume",
-                boot_volume_id=os.getenv("OCI_BOOT_VOLUME_ID").strip()
+                boot_volume_id=boot_volume_id
             ),
             create_vnic_details=oci.core.models.CreateVnicDetails(
                 subnet_id=subnet_id,
@@ -64,7 +66,7 @@ for i in range(1, total_attempts + 1):
                 display_name="kurtarilan-vnic"
             ),
             metadata={
-                "ssh_authorized_keys": str(public_ssh_key).strip()
+                "ssh_authorized_keys": public_ssh_key
             }
         )
 
@@ -80,4 +82,5 @@ for i in range(1, total_attempts + 1):
             print(f"-> API Hatasi: {e.message}")
 
     if i < total_attempts:
-        time.sleep(60) # Her deneme arasi 60 saniye bekler
+        time.sleep(60)
+        
