@@ -77,10 +77,10 @@ for i in range(1, total_attempts + 1):
 
     except oci.exceptions.ServiceError as e:
         if "Out of host capacity" in str(e) or e.status == 500:
-            print("-> Kapasite Dolu. 60 saniye bekleniyor...")
+            print("-> Kapasite Dolu. 120 saniye bekleniyor...")
         else:
             print(f"-> API Hatasi: {e.message}")
 
     if i < total_attempts:
-        time.sleep(60)
+        time.sleep(120)
         
