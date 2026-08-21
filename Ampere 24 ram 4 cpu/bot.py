@@ -85,7 +85,7 @@ for i in range(1, total_attempts + 1):
             print(f"-> API Hatasi: {e.message}")
 
     # Eger 2 saat (120 deneme) gectiyse bilgilendirme yap
-    if i % 120 == 0:
+    if i % 60 == 0:
         send_telegram_message(f"⏳ Bilgilendirme:\nTam 2 saat geçti ve {i} deneme yapıldı. Mumbai'de hala boş yer yok ancak bot arka planda pes etmeden aramaya devam ediyor.")
 
     if i < total_attempts:
