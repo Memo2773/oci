@@ -30,5 +30,8 @@ jobs:
           OCI_SUBNET_ID: ${{ secrets.OCI_SUBNET_ID }}
           OCI_BOOT_VOLUME_ID: ${{ secrets.OCI_BOOT_VOLUME_ID }}
           OCI_PUBLIC_SSH_KEY: ${{ secrets.OCI_PUBLIC_SSH_KEY }} 
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          
         run: python "Ampere 24 ram 4 cpu/bot.py"
         
