@@ -53,9 +53,9 @@ for i in range(1, total_attempts + 1):
                 memory_in_gbs=12  # YENİ ÜCRETSİZ LİMİT
             ),
             # EN KRİTİK KISIM: İmaj yerine senin mevcut diskini bagliyoruz
-            source_details=oci.core.models.InstanceSourceViaBootVolumeDetails(
+                source_details=oci.core.models.InstanceSourceViaBootVolumeDetails(
                 source_type="bootVolume",
-                boot_volume_id=boot_volume_id
+                boot_volume_id=os.getenv("OCI_BOOT_VOLUME_ID").strip()
             ),
             create_vnic_details=oci.core.models.CreateVnicDetails(
                 subnet_id=subnet_id,
