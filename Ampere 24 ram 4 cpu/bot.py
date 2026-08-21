@@ -50,7 +50,7 @@ if not boot_volume_id or not subnet_id:
 
 ads = ["GiHR:AP-MUMBAI-1-AD-1"]
 total_attempts = 2000 
-sleep_time = 150 # Her deneme arasi beklenecek saniye
+sleep_time = 90 # Her deneme arasi beklenecek saniye
 
 # Bot calismaya basladiginda haber ver
 send_telegram_message("🚀 Oracle Bildirim Botu Aktif!\nMumbai bölgesinde kapasite aranmaya başlandı. Sunucu bulunduğunda sana hemen haber vereceğim.")
