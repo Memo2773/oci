@@ -50,7 +50,7 @@ if not boot_volume_id or not subnet_id:
 
 ads = ["GiHR:AP-MUMBAI-1-AD-1"]
 total_attempts = 2000 
-sleep_time = 120 # Her deneme arasi beklenecek saniye
+sleep_time = 150 # Her deneme arasi beklenecek saniye
 
 # Bot calismaya basladiginda haber ver
 send_telegram_message("🚀 Oracle Bildirim Botu Aktif!\nMumbai bölgesinde kapasite aranmaya başlandı. Sunucu bulunduğunda sana hemen haber vereceğim.")
@@ -85,7 +85,7 @@ for i in range(1, total_attempts + 1):
             print(f"-> API Hatasi: {e.message}")
 
     # Eger 2 saat (120 deneme) gectiyse bilgilendirme yap
-    if i % 60 == 0:
+    if i % 300 == 0:
         send_telegram_message(f"⏳ Bilgilendirme:\nTam 2 saat geçti ve {i} deneme yapıldı. Mumbai'de hala boş yer yok ancak bot arka planda pes etmeden aramaya devam ediyor.")
 
     if i < total_attempts:
